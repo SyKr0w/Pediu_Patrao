@@ -1,1 +1,7 @@
-/build/
+/target/
+/.git/
+/nbproject/private/
+.env
+.env.*
+*.log
+local.properties

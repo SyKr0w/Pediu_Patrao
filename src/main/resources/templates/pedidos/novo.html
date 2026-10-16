@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="content">
+        <h2>Novo pedido</h2>
+        <p>O preço é recuperado no servidor a partir do cadastro do produto. O pedido começa como RECEBIDO.</p>
+
+        <form th:action="@{/pedidos/novo}" method="post" class="card card-body">
+            <label class="form-label">Cliente</label>
+            <select class="form-select mb-3" name="clienteId" required>
+                <option value="">Selecione...</option>
+                <option th:each="c : ${clientes}" th:value="${c.id}"
+                        th:text="|${c.nome} - ${c.telefone}|"></option>
+            </select>
+
+            <div id="linhas">
+                <div class="row g-2 mb-2 linha-item">
+                    <div class="col-9">
+                        <select class="form-select" name="produtoId" required>
+                            <option value="">Escolha um produto</option>
+                            <option th:each="p : ${produtos}" th:if="${p.ativo == true}"
+                                    th:value="${p.id}" th:text="|${p.nome} - R$ ${p.preco}|"></option>
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <input class="form-control" type="number" name="quantidade"
+                               min="1" max="100" value="1" required/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary" onclick="adicionarItem()">+ Item</button>
+                <button type="submit" class="btn btn-primary">Registrar pedido</button>
+                <a class="btn btn-link" th:href="@{/pedidos}">Voltar</a>
+            </div>
+        </form>
+
+        <script>
+            function adicionarItem() {
+                const nova = document.querySelector('.linha-item').cloneNode(true);
+                nova.querySelector('select').value = '';
+                nova.querySelector('input').value = '1';
+                document.getElementById('linhas').appendChild(nova);
+            }
+        </script>
+    </div>
+</body>
+
+</html>

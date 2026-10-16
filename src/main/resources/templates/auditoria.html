@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="content">
+        <h2 class="mb-3">Histórico de auditoria</h2>
+
+        <div class="row g-2 align-items-end mb-3">
+            <div class="col-12 col-md-3">
+                <label for="filtroOperacao" class="form-label">Operação</label>
+                <select id="filtroOperacao" class="form-select">
+                    <option value="">Todas as operações</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label for="filtroRegistro" class="form-label">Registro afetado</label>
+                <input id="filtroRegistro"
+                       type="search"
+                       class="form-control"
+                       placeholder="Buscar cliente, pedido ou rota" />
+            </div>
+
+            <div class="col-12 col-md-3">
+                <label for="filtroPerfil" class="form-label">Perfil</label>
+                <select id="filtroPerfil" class="form-select">
+                    <option value="">Todos os perfis</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-2">
+                <button id="limparFiltrosAuditoria"
+                        type="button"
+                        class="btn btn-outline-secondary w-100">
+                    Limpar filtros
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table id="tabelaAuditoria" class="table table-striped table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Operação</th>
+                        <th>Registro afetado</th>
+                        <th>Campos</th>
+                        <th>Justificativa</th>
+                        <th>Data/hora</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(registros)}">
+                        <td colspan="6">Nenhum evento registrado.</td>
+                    </tr>
+
+                    <tr th:each="r : ${registros}" class="linhaAuditoria">
+                        <td>
+                            <div th:text="${r.usuario}"></div>
+                            <small class="text-muted perfilAuditoria" th:text="${r.perfil}"></small>
+                        </td>
+
+                        <td class="operacaoAuditoria" th:text="${r.operacao}"></td>
+
+                        <td class="registroAuditoria">
+                            <span th:if="${r.entidade == 'ROTA'}"
+                                  th:text="|Requisição bloqueada: ${r.entidadeId}|"></span>
+                            <span th:unless="${r.entidade == 'ROTA'}"
+                                  th:text="${descricoesEntidades[r.entidade + ':' + r.entidadeId] ?: r.entidade}"></span>
+                        </td>
+
+                        <td>
+                            <span th:if="${r.entidade == 'ROTA'}">Acesso negado (403)</span>
+
+                            <div th:unless="${r.entidade == 'ROTA'}"
+                                 th:each="campo : ${r.campos}"
+                                 class="mb-1 small">
+                                <b th:text="${campo.key}"></b>:
+                                <span th:text="${campo.key == 'clienteId' and campo.value.anterior != null ? (nomesClientes[campo.value.anterior] ?: 'Cliente não localizado') : (campo.value.anterior ?: '—')}"></span>
+                                →
+                                <span th:text="${campo.key == 'clienteId' and campo.value.novo != null ? (nomesClientes[campo.value.novo] ?: 'Cliente não localizado') : (campo.value.novo ?: '—')}"></span>
+                            </div>
+                        </td>
+
+                        <td th:text="${r.justificativa}"></td>
+                        <td class="small" th:text="${r.dataHora}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="avisoSemResultadosAuditoria" class="text-muted" hidden>
+            Nenhum registro corresponde aos filtros selecionados.
+        </p>
+
+        <script>
+            (function () {
+                const tabela = document.getElementById('tabelaAuditoria');
+                if (!tabela) return;
+
+                const linhas = Array.from(tabela.querySelectorAll('tbody tr.linhaAuditoria'));
+                const filtroOperacao = document.getElementById('filtroOperacao');
+                const filtroRegistro = document.getElementById('filtroRegistro');
+                const filtroPerfil = document.getElementById('filtroPerfil');
+                const avisoSemResultados = document.getElementById('avisoSemResultadosAuditoria');
+                const botaoLimpar = document.getElementById('limparFiltrosAuditoria');
+
+                function normalizar(valor) {
+                    return (valor || '')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .toLocaleLowerCase('pt-BR')
+                        .trim();
+                }
+
+                function textoDaLinha(linha, classe) {
+                    const elemento = linha.querySelector('.' + classe);
+                    return elemento ? elemento.textContent.trim() : '';
+                }
+
+                function preencherOpcoes(select, classe) {
+                    const valores = [...new Set(linhas.map(linha => textoDaLinha(linha, classe)))]
+                        .filter(Boolean)
+                        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+                    for (const valor of valores) {
+                        const option = document.createElement('option');
+                        option.value = valor;
+                        option.textContent = valor;
+                        select.appendChild(option);
+                    }
+                }
+
+                function aplicarFiltros() {
+                    const operacao = filtroOperacao.value;
+                    const registro = normalizar(filtroRegistro.value);
+                    const perfil = filtroPerfil.value;
+                    let visiveis = 0;
+
+                    for (const linha of linhas) {
+                        const atende = (!operacao || textoDaLinha(linha, 'operacaoAuditoria') === operacao)
+                            && (!registro || normalizar(textoDaLinha(linha, 'registroAuditoria')).includes(registro))
+                            && (!perfil || textoDaLinha(linha, 'perfilAuditoria') === perfil);
+
+                        linha.style.display = atende ? '' : 'none';
+                        if (atende) visiveis++;
+                    }
+
+                    avisoSemResultados.hidden = linhas.length === 0 || visiveis > 0;
+                }
+
+                preencherOpcoes(filtroOperacao, 'operacaoAuditoria');
+                preencherOpcoes(filtroPerfil, 'perfilAuditoria');
+
+                filtroOperacao.addEventListener('change', aplicarFiltros);
+                filtroRegistro.addEventListener('input', aplicarFiltros);
+                filtroPerfil.addEventListener('change', aplicarFiltros);
+                botaoLimpar.addEventListener('click', function () {
+                    filtroOperacao.value = '';
+                    filtroRegistro.value = '';
+                    filtroPerfil.value = '';
+                    aplicarFiltros();
+                });
+            })();
+        </script>
+    </div>
+</body>
+
+</html>
