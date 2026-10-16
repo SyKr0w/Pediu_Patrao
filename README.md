@@ -1,6 +1,6 @@
 # PediuPatrão
 
-Projeto desenvolvido para a Atividade Prática M1, Parte 2, de Engenharia de Software. O sistema permite gerenciar clientes, produtos e pedidos de uma pizzaria.
+Pagina web com sistema que permite gerenciar clientes, produtos e pedidos de uma pizzaria.
 
 [Como rodar](#como-rodar)
 
