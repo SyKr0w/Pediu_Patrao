@@ -60,6 +60,10 @@ public class PedidoService {
             AuditoriaService.alteracao(changes,"saidaEm",null,p.getSaidaEm());
             AuditoriaService.alteracao(changes,"saidaPor",null,p.getSaidaPor());
         }
+        if ("FINALIZADO".equals(status)) {
+            p.setFinalizadoEm(LocalDateTime.now());
+            AuditoriaService.alteracao(changes,"finalizadoEm",null,p.getFinalizadoEm());
+        }
         Pedido result=pedidos.save(p);auditoria.registrar("ALTERACAO_STATUS","PEDIDO",id,changes,null);return result;
     }
     @PreAuthorize("hasRole('GERENTE')")

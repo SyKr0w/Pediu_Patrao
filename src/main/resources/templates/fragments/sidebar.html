@@ -21,6 +21,9 @@
             <li class="nav-item" th:if="${perfilAtual == 'ATENDENTE' or perfilAtual == 'GERENTE'}">
                 <a class="nav-link" th:href="@{/produtos}"><i class="bi bi-box"></i> Produtos</a>
             </li>
+            <li class="nav-item" th:if="${perfilAtual == 'ADMIN' or perfilAtual == 'GERENTE'}">
+                <a class="nav-link" th:href="@{/painel}"><i class="bi bi-bar-chart"></i> Painel</a>
+            </li>
             <li class="nav-item" th:if="${perfilAtual == 'ADMIN'}">
                 <a class="nav-link" th:href="@{/usuarios}"><i class="bi bi-person-gear"></i> Usuários</a>
             </li>

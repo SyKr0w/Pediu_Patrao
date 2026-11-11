@@ -68,6 +68,22 @@ class PedidoServiceTest {
         when(pedidos.findById("id1")).thenReturn(Optional.of(pedido));
         assertThrows(IllegalArgumentException.class,()->service.cancelar("id1"," "));
     }
+    @Test void finalizarRegistraDataDaVenda() {
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken("gerente01", "N/A", List.of(new SimpleGrantedAuthority("ROLE_GERENTE"))));
+        Pedido pedido = new Pedido();
+        pedido.setStatus("RETIRADO");
+        pedido.setEntradaEm(java.time.LocalDateTime.now().minusHours(2));
+        pedido.setSaidaEm(java.time.LocalDateTime.now().minusMinutes(5));
+        when(pedidos.findById("id1")).thenReturn(Optional.of(pedido));
+        when(pedidos.save(any(Pedido.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Pedido finalizado = service.atualizarStatus("id1", "FINALIZADO");
+        assertNotNull(finalizado.getFinalizadoEm());
+        assertEquals("FINALIZADO", finalizado.getStatus());
+        verify(auditoria).registrar(eq("ALTERACAO_STATUS"), eq("PEDIDO"), eq("id1"), anyMap(), isNull());
+    }
+
     @Test void saidaRegistraHoraEUsuario() {
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken("gerente01", "N/A", List.of(new SimpleGrantedAuthority("ROLE_GERENTE"))));

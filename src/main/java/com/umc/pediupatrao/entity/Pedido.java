@@ -23,6 +23,7 @@ public class Pedido {
     private String entradaPor;
     private LocalDateTime saidaEm;
     private String saidaPor;
+    private LocalDateTime finalizadoEm;
     private String justificativaCancelamento;
     public String getId(){return id;} public void setId(String x){id=x;}
     public String getClienteId(){return clienteId;} public void setClienteId(String x){clienteId=x;}
@@ -39,5 +40,6 @@ public class Pedido {
     public String getEntradaPor(){return entradaPor;}public void setEntradaPor(String x){entradaPor=x;}
     public LocalDateTime getSaidaEm(){return saidaEm;}public void setSaidaEm(LocalDateTime x){saidaEm=x;}
     public String getSaidaPor(){return saidaPor;}public void setSaidaPor(String x){saidaPor=x;}
+    public LocalDateTime getFinalizadoEm(){return finalizadoEm;}public void setFinalizadoEm(LocalDateTime x){finalizadoEm=x;}
     public String getJustificativaCancelamento(){return justificativaCancelamento;}public void setJustificativaCancelamento(String x){justificativaCancelamento=x;}
 }

@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/error", "/css/**", "/dist/**", "/plugins/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/usuarios/**", "/api/usuarios/**").hasRole("ADMIN")
                 .requestMatchers("/auditoria/**", "/api/auditoria/**").hasAnyRole("ADMIN", "GERENTE")
+                .requestMatchers("/painel", "/painel/**", "/api/painel/**").hasAnyRole("ADMIN", "GERENTE")
                 .requestMatchers("/api/pedidos/*/desconto", "/api/pedidos/*/cancelamento", "/pedidos/*/desconto", "/pedidos/*/cancelar").hasRole("GERENTE")
                 .requestMatchers("/api/pedidos/**", "/pedidos/**").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE")
                 .requestMatchers("/api/clientes/**", "/clientes/**").hasAnyRole("GERENTE", "ATENDENTE")

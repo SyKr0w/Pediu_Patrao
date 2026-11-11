@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/painel.css}">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <h2 class="mb-0">Painel</h2>
+            <span class="text-muted small" id="painel-atualizacao" aria-live="polite"></span>
+        </div>
+
+        <form id="painel-filtros" class="card card-body mb-4" autocomplete="off">
+            <div class="row g-3 align-items-end">
+                <div class="col-sm-6 col-lg-2">
+                    <label class="form-label" for="painel-inicio">Início</label>
+                    <input class="form-control" type="date" id="painel-inicio" name="inicio" required>
+                </div>
+                <div class="col-sm-6 col-lg-2">
+                    <label class="form-label" for="painel-fim">Fim</label>
+                    <input class="form-control" type="date" id="painel-fim" name="fim" required>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label" for="painel-status">Status</label>
+                    <select class="form-select" id="painel-status" name="status">
+                        <option value="">Todos</option>
+                        <option value="RECEBIDO">Recebido</option>
+                        <option value="EM_PREPARACAO">Em preparação</option>
+                        <option value="PRONTO">Pronto</option>
+                        <option value="SAIU_PARA_ENTREGA">Saiu para entrega</option>
+                        <option value="RETIRADO">Retirado</option>
+                        <option value="FINALIZADO">Finalizado</option>
+                        <option value="CANCELADO">Cancelado</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label" for="painel-produto">Produto</label>
+                    <select class="form-select" id="painel-produto" name="produtoId">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1" id="painel-atualizar">Atualizar</button>
+                    <button type="button" class="btn btn-outline-secondary" id="painel-limpar">Limpar</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="painel-erro" class="alert alert-danger d-none" role="alert"></div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card h-100"><div class="card-body">
+                    <div class="text-muted small">Faturamento</div>
+                    <div class="painel-indicador" id="painel-faturamento">—</div>
+                </div></div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card h-100"><div class="card-body">
+                    <div class="text-muted small">Pedidos finalizados</div>
+                    <div class="painel-indicador" id="painel-finalizados">—</div>
+                </div></div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card h-100"><div class="card-body">
+                    <div class="text-muted small">Ticket médio</div>
+                    <div class="painel-indicador" id="painel-ticket">—</div>
+                </div></div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card h-100"><div class="card-body">
+                    <div class="text-muted small">Cancelamentos</div>
+                    <div class="painel-indicador" id="painel-cancelamentos">—</div>
+                </div></div>
+            </div>
+        </div>
+
+        <section class="card mb-4" aria-labelledby="historico-titulo">
+            <div class="card-body">
+                <h4 class="h5" id="historico-titulo">Histórico de vendas</h4>
+                <div class="painel-grafico"><canvas id="painel-grafico-historico" aria-label="Vendas por dia" role="img"></canvas></div>
+            </div>
+        </section>
+
+        <div class="row g-3 mb-4">
+            <section class="col-lg-5" aria-labelledby="situacao-titulo">
+                <div class="card h-100"><div class="card-body">
+                    <h4 class="h5" id="situacao-titulo">Situação atual dos pedidos</h4>
+                    <div class="painel-grafico"><canvas id="painel-grafico-situacao" aria-label="Pedidos por status" role="img"></canvas></div>
+                    <p class="text-center text-muted small d-none" id="painel-situacao-vazia">Nenhum pedido no período.</p>
+                </div></div>
+            </section>
+            <section class="col-lg-7" aria-labelledby="populares-titulo">
+                <div class="card h-100"><div class="card-body">
+                    <h4 class="h5" id="populares-titulo">Mais populares</h4>
+                    <div class="painel-grafico"><canvas id="painel-grafico-populares" aria-label="Produtos mais vendidos por quantidade" role="img"></canvas></div>
+                    <p class="text-center text-muted small d-none" id="painel-populares-vazio">Nenhuma venda finalizada no período.</p>
+                </div></div>
+            </section>
+        </div>
+
+        <script th:src="@{/plugins/chart.js/Chart.bundle.min.js}"></script>
+        <script th:src="@{/js/painel.js}"></script>
+    </div>
+</body>
+
+</html>
